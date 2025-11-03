@@ -97,7 +97,7 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <StatsSection />
+      
 
       {/* Portfolio Section */}
       <PortfolioSection />
