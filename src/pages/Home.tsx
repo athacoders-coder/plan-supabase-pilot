@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import StatsSection from "@/components/home/StatsSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import PortfolioSection from "@/components/home/PortfolioSection";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-bg.jpg";
@@ -97,6 +100,15 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Stats Section */}
+      <StatsSection />
+
+      {/* Portfolio Section */}
+      <PortfolioSection />
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
 
       {/* Recent Blog Posts */}
       {recentPosts && recentPosts.length > 0 && (
