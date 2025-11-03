@@ -12,36 +12,31 @@ import PortfolioSection from "@/components/home/PortfolioSection";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-bg.jpg";
-
 const Home = () => {
-  const { data: recentPosts } = useQuery({
+  const {
+    data: recentPosts
+  } = useQuery({
     queryKey: ["recent-posts"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
-        .limit(3);
-      
+      const {
+        data,
+        error
+      } = await supabase.from("posts").select("*").eq("status", "published").order("published_at", {
+        ascending: false
+      }).limit(3);
       if (error) throw error;
       return data;
-    },
+    }
   });
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       {/* Hero Section */}
-      <section 
-        className="relative min-h-screen flex items-center justify-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${heroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
+      <section className="relative min-h-screen flex items-center justify-center" style={{
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${heroImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
         <div className="container mx-auto px-4 text-center text-white">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             Membangun Masa Depan Bersama
@@ -108,11 +103,10 @@ const Home = () => {
       <PortfolioSection />
 
       {/* Testimonials Section */}
-      <TestimonialsSection />
+      
 
       {/* Recent Blog Posts */}
-      {recentPosts && recentPosts.length > 0 && (
-        <section className="py-20 bg-muted">
+      {recentPosts && recentPosts.length > 0 && <section className="py-20 bg-muted">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Artikel Terbaru</h2>
@@ -122,15 +116,8 @@ const Home = () => {
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-8">
-              {recentPosts.map((post) => (
-                <Card key={post.id} className="hover:shadow-elegant transition-shadow">
-                  {post.featured_image && (
-                    <img 
-                      src={post.featured_image} 
-                      alt={post.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                  )}
+              {recentPosts.map(post => <Card key={post.id} className="hover:shadow-elegant transition-shadow">
+                  {post.featured_image && <img src={post.featured_image} alt={post.title} className="w-full h-48 object-cover rounded-t-lg" />}
                   <CardHeader>
                     <CardTitle className="line-clamp-2">{post.title}</CardTitle>
                     <CardDescription className="line-clamp-3">
@@ -144,8 +131,7 @@ const Home = () => {
                       </Button>
                     </Link>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
 
             <div className="text-center">
@@ -156,16 +142,13 @@ const Home = () => {
               </Link>
             </div>
           </div>
-        </section>
-      )}
+        </section>}
 
       {/* Contact Form Section */}
       <ContactForm />
 
       <Footer />
       <WhatsAppButton />
-    </div>
-  );
+    </div>;
 };
-
 export default Home;
