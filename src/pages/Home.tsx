@@ -30,7 +30,7 @@ const Home = () => {
       
       {/* Hero Section */}
       <section 
-        className="relative h-[600px] flex items-center justify-center"
+        className="relative min-h-screen flex items-center justify-center"
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${heroImage})`,
           backgroundSize: 'cover',
@@ -38,10 +38,10 @@ const Home = () => {
         }}
       >
         <div className="container mx-auto px-4 text-center text-white">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             Membangun Masa Depan Bersama
           </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             PT Aratindo Karya Utama - Partner terpercaya untuk solusi konstruksi dan infrastruktur
           </p>
           <Link to="/tentang-kami">
