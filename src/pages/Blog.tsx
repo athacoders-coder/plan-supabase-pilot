@@ -30,24 +30,24 @@ const Blog = () => {
       
       <div className="flex-1 pt-16">
         {/* Header */}
-        <section className="bg-gradient-hero text-white py-20">
+        <section className="bg-gradient-hero text-white py-12 sm:py-16 md:py-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
-            <p className="text-xl max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Blog</h1>
+            <p className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto px-2">
               Berita, wawasan, dan pembaruan terkini dari PT Aratindo Karya Utama
             </p>
           </div>
         </section>
 
         {/* Blog Posts Grid */}
-        <section className="py-16 bg-background">
+        <section className="py-12 sm:py-16 bg-background">
           <div className="container mx-auto px-4">
             {isLoading ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">Memuat artikel...</p>
               </div>
             ) : posts && posts.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {posts.map((post) => (
                   <Card key={post.id} className="hover:shadow-elegant transition-shadow flex flex-col">
                     {post.featured_image && (

@@ -10,20 +10,20 @@ const About = () => {
       
       <div className="flex-1 pt-16">
         {/* Header */}
-        <section className="bg-gradient-hero text-white py-20">
+        <section className="bg-gradient-hero text-white py-12 sm:py-16 md:py-20">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Tentang Kami</h1>
-            <p className="text-xl max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Tentang Kami</h1>
+            <p className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto px-2">
               PT Aratindo Karya Utama adalah perusahaan konstruksi terkemuka di Indonesia
             </p>
           </div>
         </section>
 
         {/* Company Profile */}
-        <section className="py-16 bg-background">
+        <section className="py-12 sm:py-16 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold mb-6">Profil Perusahaan</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Profil Perusahaan</h2>
               <div className="prose prose-lg max-w-none">
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   PT Aratindo Karya Utama adalah perusahaan yang bergerak di bidang konstruksi dan infrastruktur. 
@@ -45,9 +45,9 @@ const About = () => {
         </section>
 
         {/* Vision and Mission */}
-        <section className="py-16 bg-muted">
+        <section className="py-12 sm:py-16 bg-muted">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
               <Card className="hover:shadow-elegant transition-shadow">
                 <CardHeader>
                   <Eye className="h-12 w-12 text-primary mb-4" />
@@ -81,16 +81,16 @@ const About = () => {
         </section>
 
         {/* Values */}
-        <section className="py-16 bg-background">
+        <section className="py-12 sm:py-16 bg-background">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Nilai-Nilai Kami</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Nilai-Nilai Kami</h2>
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
                 Nilai-nilai yang menjadi fondasi setiap pekerjaan kami
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               <Card>
                 <CardHeader>
                   <Award className="h-10 w-10 text-primary mb-2" />
