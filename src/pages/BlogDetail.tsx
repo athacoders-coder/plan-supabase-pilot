@@ -5,11 +5,18 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { generateArticleSchema, generateBreadcrumbSchema } from "@/utils/structuredData";
+import { Helmet } from "react-helmet-async";
+import { usePageTracking } from "@/hooks/usePageTracking";
+import { useEffect } from "react";
+import { trackEvent } from "@/components/Analytics";
 
 const BlogDetail = () => {
   const { slug } = useParams();
+  usePageTracking();
 
   const { data: post, isLoading } = useQuery({
     queryKey: ["post", slug],
@@ -26,8 +33,55 @@ const BlogDetail = () => {
     },
   });
 
+  useEffect(() => {
+    if (post) {
+      trackEvent("view", "blog_article", post.slug);
+    }
+  }, [post]);
+
+  const articleSchema = post ? generateArticleSchema({
+    title: post.title,
+    description: post.excerpt || "",
+    image: post.featured_image || "",
+    datePublished: post.published_at || post.created_at,
+    dateModified: post.updated_at,
+    author: "PT Aratindo Karya Utama",
+    url: window.location.href,
+  }) : null;
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: window.location.origin },
+    { name: "Blog", url: `${window.location.origin}/blog` },
+    { name: post?.title || "Article", url: window.location.href },
+  ]);
+
   return (
     <div className="min-h-screen flex flex-col">
+      {post && (
+        <>
+          <SEO
+            title={post.title}
+            description={post.excerpt || ""}
+            keywords={`${post.title}, konstruksi, PT Aratindo Karya Utama`}
+            image={post.featured_image || ""}
+            url={window.location.href}
+            type="article"
+            publishedTime={post.published_at || post.created_at}
+            modifiedTime={post.updated_at}
+            article={true}
+          />
+          <Helmet>
+            {articleSchema && (
+              <script type="application/ld+json">
+                {JSON.stringify(articleSchema)}
+              </script>
+            )}
+            <script type="application/ld+json">
+              {JSON.stringify(breadcrumbSchema)}
+            </script>
+          </Helmet>
+        </>
+      )}
       <Navbar />
       
       <div className="flex-1 pt-16">

@@ -6,10 +6,17 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { generateBreadcrumbSchema, generateWebsiteSchema } from "@/utils/structuredData";
+import { Helmet } from "react-helmet-async";
+import { usePageTracking } from "@/hooks/usePageTracking";
+import { trackEvent } from "@/components/Analytics";
 
 const Blog = () => {
+  usePageTracking();
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
@@ -24,8 +31,29 @@ const Blog = () => {
     },
   });
 
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: window.location.origin },
+    { name: "Blog", url: window.location.href },
+  ]);
+
+  const websiteSchema = generateWebsiteSchema();
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="Blog - PT Aratindo Karya Utama"
+        description="Berita, wawasan, dan pembaruan terkini dari PT Aratindo Karya Utama tentang industri konstruksi, teknologi, dan inovasi"
+        keywords="blog konstruksi, berita konstruksi, artikel konstruksi, teknologi konstruksi, PT Aratindo Karya Utama blog"
+        url={window.location.href}
+      />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(websiteSchema)}
+        </script>
+      </Helmet>
       <Navbar />
       
       <div className="flex-1 pt-16">
@@ -69,7 +97,10 @@ const Blog = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Link to={`/blog/${post.slug}`}>
+                      <Link 
+                        to={`/blog/${post.slug}`}
+                        onClick={() => trackEvent("click", "blog", `view_post_${post.slug}`)}
+                      >
                         <Button variant="ghost" className="w-full">
                           Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
