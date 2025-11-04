@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
-import { Analytics } from "@/components/Analytics";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -16,7 +15,6 @@ createRoot(document.getElementById("root")!).render(
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Analytics />
           <Toaster />
           <Sonner />
           <App />
