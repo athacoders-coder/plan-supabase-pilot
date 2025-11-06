@@ -2,7 +2,9 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, Calendar, Clock, Share2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -13,9 +15,11 @@ import { Helmet } from "react-helmet-async";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { useEffect } from "react";
 import { trackEvent } from "@/components/Analytics";
+import { useToast } from "@/hooks/use-toast";
 
 const BlogDetail = () => {
   const { slug } = useParams();
+  const { toast } = useToast();
   usePageTracking();
 
   const { data: post, isLoading } = useQuery({
@@ -39,6 +43,28 @@ const BlogDetail = () => {
     }
   }, [post]);
 
+  const calculateReadingTime = (content: string) => {
+    const wordsPerMinute = 200;
+    const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+    return Math.ceil(words / wordsPerMinute);
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: post?.title,
+        text: post?.excerpt,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Disalin",
+        description: "Link artikel telah disalin ke clipboard",
+      });
+    }
+  };
+
   const articleSchema = post ? generateArticleSchema({
     title: post.title,
     description: post.excerpt || "",
@@ -56,7 +82,7 @@ const BlogDetail = () => {
   ]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-muted/30">
       {post && (
         <>
           <SEO
@@ -91,48 +117,133 @@ const BlogDetail = () => {
           </div>
         ) : post ? (
           <>
-            {/* Header */}
+            {/* Hero Header */}
             {post.featured_image && (
-              <div 
-                className="h-[400px] bg-cover bg-center relative"
-                style={{ backgroundImage: `url(${post.featured_image})` }}
-              >
-                <div className="absolute inset-0 bg-black/40"></div>
+              <div className="relative h-[500px] overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${post.featured_image})` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background"></div>
+                </div>
+                <div className="absolute inset-0 flex items-end">
+                  <div className="container mx-auto px-4 pb-12">
+                    <div className="max-w-4xl">
+                      <Badge className="mb-4 bg-primary/90 text-primary-foreground">
+                        Artikel
+                      </Badge>
+                      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white leading-tight">
+                        {post.title}
+                      </h1>
+                      {post.published_at && (
+                        <div className="flex flex-wrap items-center gap-4 text-white/90">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-5 w-5" />
+                            <span className="text-lg">
+                              {format(new Date(post.published_at), "d MMMM yyyy", { locale: id })}
+                            </span>
+                          </div>
+                          <Separator orientation="vertical" className="h-6 bg-white/30" />
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-5 w-5" />
+                            <span className="text-lg">
+                              {calculateReadingTime(post.content)} menit baca
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* Content */}
+            {/* Article Content */}
             <article className="py-16 bg-background">
-              <div className="container mx-auto px-4 max-w-4xl">
-                <Link to="/blog">
-                  <Button variant="ghost" className="mb-6">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Blog
-                  </Button>
-                </Link>
+              <div className="container mx-auto px-4">
+                <div className="max-w-4xl mx-auto">
+                  <div className="flex items-center justify-between mb-8">
+                    <Link to="/blog">
+                      <Button variant="ghost" size="lg" className="group">
+                        <ArrowLeft className="mr-2 h-5 w-5 group-hover:-translate-x-1 transition-transform" /> 
+                        Kembali ke Blog
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      onClick={handleShare}
+                      className="group"
+                    >
+                      <Share2 className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Bagikan
+                    </Button>
+                  </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
-                
-                {post.published_at && (
-                  <p className="text-muted-foreground mb-8">
-                    {format(new Date(post.published_at), "d MMMM yyyy", { locale: id })}
-                  </p>
-                )}
+                  {!post.featured_image && (
+                    <>
+                      <h1 className="text-4xl md:text-5xl font-bold mb-6">{post.title}</h1>
+                      {post.published_at && (
+                        <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-8">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-5 w-5" />
+                            <span>
+                              {format(new Date(post.published_at), "d MMMM yyyy", { locale: id })}
+                            </span>
+                          </div>
+                          <Separator orientation="vertical" className="h-6" />
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-5 w-5" />
+                            <span>
+                              {calculateReadingTime(post.content)} menit baca
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
 
-                <div 
-                  className="prose prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                  <div className="bg-card rounded-xl shadow-lg p-8 sm:p-12">
+                    <div 
+                      className="prose prose-lg prose-slate max-w-none
+                        prose-headings:font-bold prose-headings:text-foreground
+                        prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
+                        prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:text-lg
+                        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-foreground prose-strong:font-semibold
+                        prose-ul:text-muted-foreground prose-ol:text-muted-foreground
+                        prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic
+                        prose-img:rounded-lg prose-img:shadow-md
+                        dark:prose-invert"
+                      dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+                  </div>
+
+                  {/* Author & Share Section */}
+                  <div className="mt-12 p-8 bg-muted rounded-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Ditulis oleh</p>
+                        <p className="text-xl font-bold">PT Aratindo Karya Utama</p>
+                      </div>
+                      <Button size="lg" onClick={handleShare} className="group">
+                        <Share2 className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                        Bagikan Artikel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </article>
           </>
         ) : (
           <div className="container mx-auto px-4 py-20 text-center">
-            <h1 className="text-3xl font-bold mb-4">Artikel Tidak Ditemukan</h1>
-            <p className="text-muted-foreground mb-8">
+            <h1 className="text-4xl font-bold mb-4">Artikel Tidak Ditemukan</h1>
+            <p className="text-muted-foreground mb-8 text-lg">
               Maaf, artikel yang Anda cari tidak ditemukan.
             </p>
             <Link to="/blog">
-              <Button>
+              <Button size="lg">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Blog
               </Button>
             </Link>

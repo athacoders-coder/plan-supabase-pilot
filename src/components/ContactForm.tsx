@@ -183,15 +183,15 @@ const ContactForm = () => {
                   <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-sm text-muted-foreground">info@aratindokaryautama.com</p>
+                    <p className="text-sm text-muted-foreground">athadiary21@gmail.com</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
                   <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Telepon</p>
-                    <p className="text-sm text-muted-foreground">+62 21 1234 5678</p>
+                    <p className="font-medium">Telepon / WhatsApp</p>
+                    <p className="text-sm text-muted-foreground">+62 822 4159 0417</p>
                   </div>
                 </div>
                 
@@ -200,7 +200,7 @@ const ContactForm = () => {
                   <div>
                     <p className="font-medium">Alamat</p>
                     <p className="text-sm text-muted-foreground">
-                      Jakarta, Indonesia
+                      Jogja, Indonesia
                     </p>
                   </div>
                 </div>
