@@ -43,7 +43,8 @@ const BlogManagement = () => {
   const { data: posts, isLoading } = useQuery({
     queryKey: ["admin-posts"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Try with relations first, fallback to simple query if tables don't exist
+      let { data, error } = await supabase
         .from("posts")
         .select(`
           *,
@@ -60,7 +61,17 @@ const BlogManagement = () => {
         `)
         .order("created_at", { ascending: false });
       
-      if (error) throw error;
+      // If error (likely missing tables), fallback to simple query
+      if (error) {
+        const fallback = await supabase
+          .from("posts")
+          .select("*")
+          .order("created_at", { ascending: false });
+        
+        if (fallback.error) throw fallback.error;
+        return fallback.data;
+      }
+      
       return data;
     },
   });
@@ -73,7 +84,8 @@ const BlogManagement = () => {
         .select("*")
         .order("name");
       
-      if (error) throw error;
+      // Return empty array if table doesn't exist
+      if (error) return [];
       return data;
     },
   });
@@ -86,7 +98,8 @@ const BlogManagement = () => {
         .select("*")
         .order("name");
       
-      if (error) throw error;
+      // Return empty array if table doesn't exist
+      if (error) return [];
       return data;
     },
   });
@@ -110,7 +123,7 @@ const BlogManagement = () => {
 
       if (error) throw error;
 
-      // Add tags
+      // Add tags (only if table exists)
       if (selectedTags.length > 0 && newPost) {
         const postTagsData = selectedTags.map(tagId => ({
           post_id: newPost.id,
@@ -121,7 +134,10 @@ const BlogManagement = () => {
           .from("post_tags")
           .insert(postTagsData);
         
-        if (tagsError) throw tagsError;
+        // Ignore error if table doesn't exist
+        if (tagsError && !tagsError.message.includes('relation "public.post_tags" does not exist')) {
+          throw tagsError;
+        }
       }
     },
     onSuccess: () => {
@@ -152,20 +168,26 @@ const BlogManagement = () => {
 
       if (error) throw error;
 
-      // Update tags: delete old ones and insert new ones
-      await supabase.from("post_tags").delete().eq("post_id", id);
+      // Update tags: delete old ones and insert new ones (only if table exists)
+      const deleteResult = await supabase.from("post_tags").delete().eq("post_id", id);
       
-      if (selectedTags.length > 0) {
-        const postTagsData = selectedTags.map(tagId => ({
-          post_id: id,
-          tag_id: tagId,
-        }));
-        
-        const { error: tagsError } = await supabase
-          .from("post_tags")
-          .insert(postTagsData);
-        
-        if (tagsError) throw tagsError;
+      // Only proceed if table exists
+      if (!deleteResult.error || !deleteResult.error.message.includes('relation "public.post_tags" does not exist')) {
+        if (selectedTags.length > 0) {
+          const postTagsData = selectedTags.map(tagId => ({
+            post_id: id,
+            tag_id: tagId,
+          }));
+          
+          const { error: tagsError } = await supabase
+            .from("post_tags")
+            .insert(postTagsData);
+          
+          // Ignore error if table doesn't exist
+          if (tagsError && !tagsError.message.includes('relation "public.post_tags" does not exist')) {
+            throw tagsError;
+          }
+        }
       }
     },
     onSuccess: () => {

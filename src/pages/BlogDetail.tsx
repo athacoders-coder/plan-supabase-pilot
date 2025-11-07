@@ -25,7 +25,8 @@ const BlogDetail = () => {
   const { data: post, isLoading } = useQuery({
     queryKey: ["post", slug],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Try with relations first, fallback to simple query if tables don't exist
+      let { data, error } = await supabase
         .from("posts")
         .select(`
           *,
@@ -46,7 +47,19 @@ const BlogDetail = () => {
         .eq("status", "published")
         .single();
       
-      if (error) throw error;
+      // If error (likely missing tables), fallback to simple query
+      if (error) {
+        const fallback = await supabase
+          .from("posts")
+          .select("*")
+          .eq("slug", slug)
+          .eq("status", "published")
+          .single();
+        
+        if (fallback.error) throw fallback.error;
+        return fallback.data;
+      }
+      
       return data;
     },
   });

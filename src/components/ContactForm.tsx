@@ -50,7 +50,7 @@ const ContactForm = () => {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      // Save to database first
+      // Try to save to database first (optional if table doesn't exist)
       const { error: dbError } = await supabase
         .from("contact_submissions")
         .insert([{
@@ -61,7 +61,10 @@ const ContactForm = () => {
           status: "new",
         }]);
 
-      if (dbError) throw dbError;
+      // Only throw if it's not a "table doesn't exist" error
+      if (dbError && !dbError.message.includes('relation "public.contact_submissions" does not exist')) {
+        throw dbError;
+      }
 
       // Try to send email (optional, won't fail if email service is down)
       try {
