@@ -8,6 +8,7 @@ import { ArrowRight, Calendar, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import LazyImage from "@/components/LazyImage";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { generateBreadcrumbSchema, generateWebsiteSchema } from "@/utils/structuredData";
@@ -101,7 +102,7 @@ const Blog = () => {
                     <div className="grid md:grid-cols-2 gap-0">
                       {featuredPost.featured_image && (
                         <div className="relative h-64 md:h-full overflow-hidden group">
-                          <img 
+                          <LazyImage 
                             src={featuredPost.featured_image} 
                             alt={featuredPost.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -160,10 +161,11 @@ const Blog = () => {
                       >
                         {post.featured_image && (
                           <div className="relative h-56 overflow-hidden">
-                            <img 
+                            <LazyImage 
                               src={post.featured_image} 
                               alt={post.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              placeholderClassName="rounded-t-lg"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                           </div>

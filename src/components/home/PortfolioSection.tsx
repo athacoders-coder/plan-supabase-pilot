@@ -4,6 +4,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import LazyImage from "@/components/LazyImage";
 
 type GalleryImage = {
   id: string;
@@ -53,10 +54,11 @@ const PortfolioSection = () => {
             return (
               <Card key={item.id} className="overflow-hidden hover:shadow-elegant transition-all group">
                 <div className="relative h-64 overflow-hidden">
-                  <img
+                  <LazyImage
                     src={imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    placeholderClassName="rounded-t-lg"
                   />
                 </div>
                 <CardHeader>

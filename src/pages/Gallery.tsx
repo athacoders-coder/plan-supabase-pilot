@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LazyImage from "@/components/LazyImage";
 
 const Gallery = () => {
   const { data: photos, isLoading } = useQuery({
@@ -46,10 +47,11 @@ const Gallery = () => {
                     key={photo.id} 
                     className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-elegant transition-all"
                   >
-                    <img 
+                    <LazyImage 
                       src={photo.image_path} 
                       alt={photo.title || "Gallery photo"}
                       className="w-full h-56 sm:h-64 md:h-72 object-cover transition-transform group-hover:scale-110"
+                      placeholderClassName="rounded-lg"
                     />
                     {(photo.title || photo.caption) && (
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">

@@ -9,6 +9,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import StatsSection from "@/components/home/StatsSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import PortfolioSection from "@/components/home/PortfolioSection";
+import LazyImage from "@/components/LazyImage";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-bg.jpg";
@@ -117,7 +118,7 @@ const Home = () => {
 
             <div className="grid md:grid-cols-3 gap-8 mb-8">
               {recentPosts.map(post => <Card key={post.id} className="hover:shadow-elegant transition-shadow">
-                  {post.featured_image && <img src={post.featured_image} alt={post.title} className="w-full h-48 object-cover rounded-t-lg" />}
+                  {post.featured_image && <LazyImage src={post.featured_image} alt={post.title} className="w-full h-48 object-cover rounded-t-lg" placeholderClassName="rounded-t-lg" />}
                   <CardHeader>
                     <CardTitle className="line-clamp-2">{post.title}</CardTitle>
                     <CardDescription className="line-clamp-3">
