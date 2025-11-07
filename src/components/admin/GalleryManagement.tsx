@@ -19,8 +19,9 @@ interface Photo {
 
 const GalleryManagement = () => {
   const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
-    image_path: "",
     title: "",
     caption: "",
   });
@@ -41,7 +42,7 @@ const GalleryManagement = () => {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
+    mutationFn: async (data: { title: string; caption: string; image_path: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       
       const { error } = await supabase.from("photos").insert([{
@@ -78,15 +79,49 @@ const GalleryManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      image_path: "",
       title: "",
       caption: "",
     });
+    setSelectedFile(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate(formData);
+    
+    if (!selectedFile) {
+      toast.error("Pilih foto terlebih dahulu");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Upload file to Supabase Storage
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('gallery-images')
+        .upload(filePath, selectedFile);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('gallery-images')
+        .getPublicUrl(filePath);
+
+      // Save to database
+      await createMutation.mutateAsync({
+        ...formData,
+        image_path: publicUrl,
+      });
+    } catch (error: any) {
+      toast.error(error.message || "Gagal upload foto");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -106,12 +141,12 @@ const GalleryManagement = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="image_path">URL Gambar</Label>
+                <Label htmlFor="image">Pilih Foto</Label>
                 <Input
-                  id="image_path"
-                  type="url"
-                  value={formData.image_path}
-                  onChange={(e) => setFormData({ ...formData, image_path: e.target.value })}
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                   required
                 />
               </div>
@@ -133,8 +168,8 @@ const GalleryManagement = () => {
                 />
               </div>
               <div className="flex gap-2">
-                <Button type="submit" disabled={createMutation.isPending}>
-                  Tambah Foto
+                <Button type="submit" disabled={uploading || createMutation.isPending}>
+                  {uploading ? "Mengupload..." : "Tambah Foto"}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                   Batal
