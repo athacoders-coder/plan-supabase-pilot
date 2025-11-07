@@ -7,6 +7,9 @@ import { LogOut, Home } from "lucide-react";
 import { toast } from "sonner";
 import BlogManagement from "@/components/admin/BlogManagement";
 import GalleryManagement from "@/components/admin/GalleryManagement";
+import CategoryManagement from "@/components/admin/CategoryManagement";
+import TagManagement from "@/components/admin/TagManagement";
+import ContactSubmissionsManagement from "@/components/admin/ContactSubmissionsManagement";
 
 const AdminDashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -87,17 +90,32 @@ const AdminDashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="blog" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-4xl grid-cols-5 mb-6">
             <TabsTrigger value="blog">Blog</TabsTrigger>
+            <TabsTrigger value="categories">Kategori</TabsTrigger>
+            <TabsTrigger value="tags">Tag</TabsTrigger>
             <TabsTrigger value="gallery">Galeri</TabsTrigger>
+            <TabsTrigger value="contacts">Pesan</TabsTrigger>
           </TabsList>
 
           <TabsContent value="blog" className="mt-6">
             <BlogManagement />
           </TabsContent>
 
+          <TabsContent value="categories" className="mt-6">
+            <CategoryManagement />
+          </TabsContent>
+
+          <TabsContent value="tags" className="mt-6">
+            <TagManagement />
+          </TabsContent>
+
           <TabsContent value="gallery" className="mt-6">
             <GalleryManagement />
+          </TabsContent>
+
+          <TabsContent value="contacts" className="mt-6">
+            <ContactSubmissionsManagement />
           </TabsContent>
         </Tabs>
       </main>

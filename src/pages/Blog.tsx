@@ -24,7 +24,21 @@ const Blog = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("*")
+        .select(`
+          *,
+          categories (
+            id,
+            name,
+            slug
+          ),
+          post_tags (
+            tags (
+              id,
+              name,
+              slug
+            )
+          )
+        `)
         .eq("status", "published")
         .order("published_at", { ascending: false });
       
@@ -129,6 +143,11 @@ const Blog = () => {
                             </div>
                           </div>
                         )}
+                        {(featuredPost as any).categories && (
+                          <Badge variant="outline" className="mb-2">
+                            {(featuredPost as any).categories.name}
+                          </Badge>
+                        )}
                         <p className="text-muted-foreground mb-6 line-clamp-3 text-lg">
                           {featuredPost.excerpt}
                         </p>
@@ -183,6 +202,18 @@ const Blog = () => {
                               </div>
                             </div>
                           )}
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {(post as any).categories && (
+                              <Badge variant="outline" className="text-xs">
+                                {(post as any).categories.name}
+                              </Badge>
+                            )}
+                            {(post as any).post_tags?.slice(0, 2).map((pt: any) => (
+                              <Badge key={pt.tags.id} variant="secondary" className="text-xs">
+                                {pt.tags.name}
+                              </Badge>
+                            ))}
+                          </div>
                           <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
                             {post.title}
                           </CardTitle>

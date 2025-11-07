@@ -27,7 +27,21 @@ const BlogDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("*")
+        .select(`
+          *,
+          categories (
+            id,
+            name,
+            slug
+          ),
+          post_tags (
+            tags (
+              id,
+              name,
+              slug
+            )
+          )
+        `)
         .eq("slug", slug)
         .eq("status", "published")
         .single();
@@ -129,9 +143,16 @@ const BlogDetail = () => {
                 <div className="absolute inset-0 flex items-end">
                   <div className="container mx-auto px-4 pb-12">
                     <div className="max-w-4xl">
-                      <Badge className="mb-4 bg-primary/90 text-primary-foreground">
-                        Artikel
-                      </Badge>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge className="bg-primary/90 text-primary-foreground">
+                          Artikel
+                        </Badge>
+                        {(post as any).categories && (
+                          <Badge variant="outline" className="bg-white/10 text-white border-white/30">
+                            {(post as any).categories.name}
+                          </Badge>
+                        )}
+                      </div>
                       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white leading-tight">
                         {post.title}
                       </h1>
@@ -201,6 +222,19 @@ const BlogDetail = () => {
                         </div>
                       )}
                     </>
+                  )}
+
+                  {(post as any).post_tags && (post as any).post_tags.length > 0 && (
+                    <div className="mb-6">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Tag:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(post as any).post_tags.map((pt: any) => (
+                          <Badge key={pt.tags.id} variant="secondary">
+                            {pt.tags.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   <div className="bg-card rounded-xl shadow-lg p-8 sm:p-12">

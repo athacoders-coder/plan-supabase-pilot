@@ -50,11 +50,27 @@ const ContactForm = () => {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.functions.invoke("send-contact-email", {
-        body: data,
-      });
+      // Save to database first
+      const { error: dbError } = await supabase
+        .from("contact_submissions")
+        .insert([{
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          message: data.message,
+          status: "new",
+        }]);
 
-      if (error) throw error;
+      if (dbError) throw dbError;
+
+      // Try to send email (optional, won't fail if email service is down)
+      try {
+        await supabase.functions.invoke("send-contact-email", {
+          body: data,
+        });
+      } catch (emailError) {
+        console.warn("Email notification failed, but submission saved:", emailError);
+      }
 
       toast({
         title: "Pesan Terkirim!",
